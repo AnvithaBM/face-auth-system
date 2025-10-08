@@ -105,6 +105,11 @@ async function captureAndAuthenticate() {
                     message += `<div class="similarity-score">Similarity Score: ${(data.similarity * 100).toFixed(2)}%</div>`;
                 }
                 showMessage(message, 'success');
+                
+                // Redirect to dashboard after 2 seconds
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 2000);
             } else {
                 let message = data.message;
                 if (data.similarity !== undefined) {
