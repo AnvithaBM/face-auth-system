@@ -2,15 +2,17 @@
 Flask web application for face authentication system.
 """
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import cv2
 import numpy as np
 import base64
+import secrets
 from src.face_utils import FaceDetector, EmbeddingExtractor
 from src.database import UserDatabase
 from src.auth_utils import authenticate_user, find_best_match
 
 app = Flask(__name__)
+app.secret_key = secrets.token_hex(32)  # Generate a secure secret key
 
 # Initialize components
 face_detector = FaceDetector()
@@ -170,7 +172,14 @@ def authenticate():
                 threshold=0.6
             )
             
+            # Record login attempt
+            user_db.add_login_attempt(username, is_authenticated, float(similarity))
+            
             if is_authenticated:
+                # Set session
+                session['username'] = username
+                session['authenticated'] = True
+                
                 return jsonify({
                     'success': True,
                     'authenticated': True,
@@ -200,6 +209,14 @@ def authenticate():
             
             if match:
                 matched_username, similarity = match
+                
+                # Record login attempt
+                user_db.add_login_attempt(matched_username, True, float(similarity))
+                
+                # Set session
+                session['username'] = matched_username
+                session['authenticated'] = True
+                
                 return jsonify({
                     'success': True,
                     'authenticated': True,
@@ -239,6 +256,174 @@ def get_users():
             'success': False,
             'message': f'Error: {str(e)}'
         }), 500
+
+
+@app.route('/dashboard')
+def dashboard():
+    """User dashboard page - requires authentication."""
+    if 'authenticated' not in session or not session.get('authenticated'):
+        return redirect(url_for('authenticate_page'))
+    
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('authenticate_page'))
+    
+    return render_template('dashboard.html', username=username)
+
+
+@app.route('/api/profile', methods=['GET'])
+def get_profile():
+    """Get user profile information."""
+    if 'authenticated' not in session or not session.get('authenticated'):
+        return jsonify({
+            'success': False,
+            'message': 'Not authenticated'
+        }), 401
+    
+    username = session.get('username')
+    if not username:
+        return jsonify({
+            'success': False,
+            'message': 'No username in session'
+        }), 401
+    
+    try:
+        user_info = user_db.get_user_info(username)
+        login_history = user_db.get_login_history(username)
+        
+        if not user_info:
+            return jsonify({
+                'success': False,
+                'message': 'User not found'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'user': user_info,
+            'login_history': login_history
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error: {str(e)}'
+        }), 500
+
+
+@app.route('/api/update-face', methods=['POST'])
+def update_face():
+    """Update user's face embedding."""
+    if 'authenticated' not in session or not session.get('authenticated'):
+        return jsonify({
+            'success': False,
+            'message': 'Not authenticated'
+        }), 401
+    
+    username = session.get('username')
+    if not username:
+        return jsonify({
+            'success': False,
+            'message': 'No username in session'
+        }), 401
+    
+    try:
+        data = request.json
+        image_data = data.get('image')
+        
+        if not image_data:
+            return jsonify({
+                'success': False,
+                'message': 'Image is required'
+            }), 400
+        
+        # Decode image
+        image = decode_image(image_data)
+        
+        if image is None:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to decode image'
+            }), 400
+        
+        # Detect face
+        face = face_detector.detect_face(image)
+        
+        if face is None:
+            return jsonify({
+                'success': False,
+                'message': 'No face detected in the image'
+            }), 400
+        
+        # Extract embedding
+        embedding = embedding_extractor.extract_embedding(face)
+        normalized_embedding = embedding_extractor.normalize_embedding(embedding)
+        
+        # Update in database
+        success = user_db.update_user_embedding(username, normalized_embedding)
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': 'Face embedding updated successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to update face embedding'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error: {str(e)}'
+        }), 500
+
+
+@app.route('/api/delete-account', methods=['POST'])
+def delete_account():
+    """Delete user account."""
+    if 'authenticated' not in session or not session.get('authenticated'):
+        return jsonify({
+            'success': False,
+            'message': 'Not authenticated'
+        }), 401
+    
+    username = session.get('username')
+    if not username:
+        return jsonify({
+            'success': False,
+            'message': 'No username in session'
+        }), 401
+    
+    try:
+        success = user_db.delete_user(username)
+        
+        if success:
+            # Clear session
+            session.clear()
+            
+            return jsonify({
+                'success': True,
+                'message': 'Account deleted successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to delete account'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error: {str(e)}'
+        }), 500
+
+
+@app.route('/logout')
+def logout():
+    """Logout user."""
+    session.clear()
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
