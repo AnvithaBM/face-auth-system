@@ -12,53 +12,73 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            padding: 40px 20px;
         }
         
         .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .hero-section {
             background: white;
             border-radius: 20px;
-            padding: 40px;
+            padding: 50px 40px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
-            width: 100%;
             text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
         }
         
         h1 {
             color: #667eea;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-size: 3em;
+            font-weight: 700;
         }
         
         .subtitle {
             color: #666;
             margin-bottom: 40px;
-            font-size: 1.1em;
+            font-size: 1.3em;
+            font-weight: 400;
         }
         
         .button-group {
             display: flex;
-            flex-direction: column;
             gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
         
         .btn {
-            padding: 18px 30px;
+            padding: 18px 40px;
             font-size: 1.2em;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
-            display: block;
+            display: inline-block;
             font-weight: 600;
+            min-width: 220px;
         }
         
         .btn-primary {
@@ -72,29 +92,215 @@
         }
         
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
         
-        .icon {
-            font-size: 4em;
+        /* Features Section */
+        .features-section {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .features-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .features-header h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .features-header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
             margin-bottom: 20px;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+        
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card h3 {
+            color: #333;
+            font-size: 1.4em;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .feature-card p {
+            color: #555;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+        
+        /* Tech Stack Section */
+        .tech-stack {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+        }
+        
+        .tech-stack h3 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        
+        .tech-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .tech-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.95em;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2em;
+            }
+            
+            .subtitle {
+                font-size: 1.1em;
+            }
+            
+            .features-header h2 {
+                font-size: 2em;
+            }
+            
+            .hero-section, .features-section {
+                padding: 30px 25px;
+            }
+            
+            .btn {
+                min-width: 100%;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="icon">🔐</div>
-        <h1>Face Auth System</h1>
-        <p class="subtitle">Secure face-based authentication</p>
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="icon">🔐</div>
+            <h1>Face Authentication System</h1>
+            <p class="subtitle">Secure, Modern, and Intelligent Face-Based Authentication</p>
+            
+            <div class="button-group">
+                <a href="/register" class="btn btn-primary">
+                    👤 Register New User
+                </a>
+                <a href="/authenticate" class="btn btn-secondary">
+                    🔓 Authenticate
+                </a>
+            </div>
+        </div>
         
-        <div class="button-group">
-            <a href="/register" class="btn btn-primary">
-                👤 Register New User
-            </a>
-            <a href="/authenticate" class="btn btn-secondary">
-                🔓 Authenticate
-            </a>
+        <!-- Features Section -->
+        <div class="features-section">
+            <div class="features-header">
+                <h2>✨ Key Features</h2>
+                <p>Experience next-generation biometric authentication</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📸</div>
+                    <h3>Webcam Registration</h3>
+                    <p>Register new users instantly using your webcam. Real-time face capture with automatic detection ensures quick and accurate enrollment.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure Authentication</h3>
+                    <p>State-of-the-art face recognition powered by deep learning. Verify identity with high accuracy using neural network embeddings.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>User Management</h3>
+                    <p>Comprehensive user dashboard for managing profiles. View, update, and delete user accounts with ease through our intuitive interface.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Real-time Detection</h3>
+                    <p>Instant face detection and embedding extraction. Advanced algorithms process your face in milliseconds for seamless authentication.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3>SQLite Database</h3>
+                    <p>Efficient local storage for user data. Privacy-friendly architecture stores only mathematical embeddings, not raw images.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Responsive Design</h3>
+                    <p>Beautiful interface that works everywhere. Fully responsive web design optimized for desktop, tablet, and mobile devices.</p>
+                </div>
+            </div>
+            
+            <!-- Tech Stack -->
+            <div class="tech-stack">
+                <h3>🚀 Powered By</h3>
+                <div class="tech-badges">
+                    <span class="tech-badge">Flask</span>
+                    <span class="tech-badge">TensorFlow</span>
+                    <span class="tech-badge">OpenCV</span>
+                    <span class="tech-badge">MobileNetV2</span>
+                    <span class="tech-badge">SQLite</span>
+                    <span class="tech-badge">WebRTC</span>
+                    <span class="tech-badge">Python</span>
+                    <span class="tech-badge">JavaScript</span>
+                </div>
+            </div>
         </div>
     </div>
 </body>
