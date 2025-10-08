@@ -54,3 +54,7 @@ data/
 dataset/
 *.zip
 *.tar.gz
+
+# Testing
+test_system.py
+
