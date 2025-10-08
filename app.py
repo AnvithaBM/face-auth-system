@@ -53,6 +53,12 @@ def authenticate_page():
     return render_template('authenticate.html')
 
 
+@app.route('/dashboard')
+def dashboard_page():
+    """Dashboard page to view login history and user info."""
+    return render_template('dashboard.html')
+
+
 @app.route('/api/register', methods=['POST'])
 def register_user():
     """Register a new user with their face embedding."""
@@ -171,6 +177,9 @@ def authenticate():
             )
             
             if is_authenticated:
+                # Log successful authentication
+                user_db.log_authentication(username, True, similarity)
+                
                 return jsonify({
                     'success': True,
                     'authenticated': True,
@@ -179,6 +188,9 @@ def authenticate():
                     'message': f'Authentication successful! Welcome {username}'
                 })
             else:
+                # Log failed authentication
+                user_db.log_authentication(username, False, similarity)
+                
                 return jsonify({
                     'success': True,
                     'authenticated': False,
@@ -200,6 +212,9 @@ def authenticate():
             
             if match:
                 matched_username, similarity = match
+                # Log successful authentication
+                user_db.log_authentication(matched_username, True, similarity)
+                
                 return jsonify({
                     'success': True,
                     'authenticated': True,
@@ -232,6 +247,47 @@ def get_users():
             'success': True,
             'users': usernames,
             'count': len(usernames)
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error: {str(e)}'
+        }), 500
+
+
+@app.route('/api/users-info', methods=['GET'])
+def get_users_info():
+    """Get list of all registered users with registration timestamps."""
+    try:
+        users_info = user_db.get_all_users_with_info()
+        
+        return jsonify({
+            'success': True,
+            'users': users_info,
+            'count': len(users_info)
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error: {str(e)}'
+        }), 500
+
+
+@app.route('/api/login-history', methods=['GET'])
+def get_login_history():
+    """Get login history."""
+    try:
+        username = request.args.get('username', None)
+        limit = int(request.args.get('limit', 50))
+        
+        history = user_db.get_login_history(username, limit)
+        
+        return jsonify({
+            'success': True,
+            'history': history,
+            'count': len(history)
         })
         
     except Exception as e:
