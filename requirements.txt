@@ -8,3 +8,4 @@ scipy==1.11.2
 matplotlib==3.7.2
 jupyter==1.0.0
 ipykernel==6.25.1
+pytz==2023.3
